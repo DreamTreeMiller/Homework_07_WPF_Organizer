@@ -79,6 +79,15 @@
     <Compile Include="RecycleBin.xaml.cs">
       <DependentUpon>RecycleBin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SearchMenu.xaml.cs">
+      <DependentUpon>SearchMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UploadFileMenu.xaml.cs">
+      <DependentUpon>UploadFileMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WorkingList.xaml.cs">
+      <DependentUpon>WorkingList.xaml</DependentUpon>
+    </Compile>
     <Page Include="GenerateNotesMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -100,6 +109,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="RecycleBin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SearchMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UploadFileMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WorkingList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

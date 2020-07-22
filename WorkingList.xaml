@@ -1,20 +1,20 @@
-﻿<Window x:Class="Homework_07_WPF_Organizer.RecycleBin"
+﻿<Window x:Class="Homework_07_WPF_Organizer.WorkingList"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Homework_07_WPF_Organizer"
         mc:Ignorable="d"
-        Title="Корзина" Height="450" Width="800">
-    <Grid>
+        Title="WorkingList" Height="450" Width="800">
+	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="2*" 
+			<ColumnDefinition Width="3*" 
 							  MinWidth="325"
 							  />
-			<ColumnDefinition Width="*"  MinWidth="200"/>
+			<ColumnDefinition Width="*"  MinWidth="100"/>
 		</Grid.ColumnDefinitions>
 
-		<ListView x:Name="rbListView"
+		<ListView x:Name="workingListView"
 				  Grid.Column="0"
 				  Margin="10"
 				  HorizontalContentAlignment="Stretch"
@@ -48,42 +48,19 @@
 		</ListView>
 		<StackPanel
 			Grid.Column="1"
+			Grid.Row="2"
+			Margin="0,30,0,0"
 			>
-			<Button Name="RestroreNote" 
-					Content="Восстановить запись"
+			<TextBlock HorizontalAlignment="Center">
+				Сортировка
+			</TextBlock>
+			<Button Name="sortbydate" 
+					Content="По дате" 
 					Width="180"
-					Margin="20"
+					Margin="5"
 					BorderThickness="0"
-					Background="WhiteSmoke"
-					Click="Click_RestoreNote" 
-					VerticalAlignment="Center">
-				<Button.Resources>
-					<Style TargetType="Border">
-						<Setter Property="CornerRadius" Value="5"/>
-					</Style>
-				</Button.Resources>
-			</Button>
-			<Button Name="DeleteForever" 
-					Content="Удалить запись навсегда"
-					Width="180"
-					Margin="20"
-					BorderThickness="0"
-					Background="WhiteSmoke"
-					VerticalAlignment="Center" 
-					Click="DeleteForever_Click">
-				<Button.Resources>
-					<Style TargetType="Border">
-						<Setter Property="CornerRadius" Value="5"/>
-					</Style>
-				</Button.Resources>
-			</Button>
-			<Button Name="EmptyBin" 
-					Content="Очистить корзину"
-					Width="180"
-					Margin="20"
-					BorderThickness="0"
-					Background="WhiteSmoke"
-					VerticalAlignment="Center" Click="EmptyBin_Click" 
+					Background="WhiteSmoke" 
+					Click="sortbydate_Click"
 					>
 				<Button.Resources>
 					<Style TargetType="Border">
@@ -91,15 +68,54 @@
 					</Style>
 				</Button.Resources>
 			</Button>
-			<Button Name="ExitButton" 
-					Content="Выход"
+			<Button Name="sortbytime" 
+					Content="По времени" 
 					Width="180"
-					Margin="20"
+					Margin="5"
 					BorderThickness="0"
-					Background="WhiteSmoke"
-					Click="Click_ExitButton" 
-					IsCancel="True" 
-					VerticalAlignment="Center"
+					Background="WhiteSmoke" 
+					Click="sortbytime_Click"
+					>
+				<Button.Resources>
+					<Style TargetType="Border">
+						<Setter Property="CornerRadius" Value="5"/>
+					</Style>
+				</Button.Resources>
+			</Button>
+			<Button Name="sortbylocation" 
+					Content="По месту" 
+					Width="180"
+					Margin="5"
+					BorderThickness="0"
+					Background="WhiteSmoke" 
+					Click="sortbylocation_Click"
+					>
+				<Button.Resources>
+					<Style TargetType="Border">
+						<Setter Property="CornerRadius" Value="5"/>
+					</Style>
+				</Button.Resources>
+			</Button>
+			<Button Name="sortbytitle" 
+					Content="По заголовку" 
+					Width="180"
+					Margin="5"
+					BorderThickness="0"
+					Background="WhiteSmoke" 
+					Click="sortbytitle_Click"
+					>
+				<Button.Resources>
+					<Style TargetType="Border">
+						<Setter Property="CornerRadius" Value="5"/>
+					</Style>
+				</Button.Resources>
+			</Button>
+			<Button Name="sortbytext" 
+					Content="По тексту"
+					Width="180"
+					Margin="5"
+					BorderThickness="0"
+					Background="WhiteSmoke" Click="sortbytext_Click"
 					>
 				<Button.Resources>
 					<Style TargetType="Border">
@@ -108,5 +124,6 @@
 				</Button.Resources>
 			</Button>
 		</StackPanel>
+
 	</Grid>
 </Window>

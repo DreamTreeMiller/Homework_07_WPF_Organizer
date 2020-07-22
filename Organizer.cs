@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Version 3.0. Delivered to SkillBox
+using System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace Homework_07_WPF_Organizer
 		public sbyte Hour  { get; set; }
 		public sbyte Min   { get; set; }
 
+		public SimpleDateTime() { }
+
 		public int CompareTo(object o)
 		{
 			SimpleDateTime key = o as SimpleDateTime;
@@ -30,6 +33,27 @@ namespace Homework_07_WPF_Organizer
 			result = Min.CompareTo(key.Min);
 			return result;
 		}
+
+		public int ComparebyDate(object o)
+		{
+			SimpleDateTime key = o as SimpleDateTime;
+			int result = Year.CompareTo(key.Year);
+			if (result != 0) return result;
+			result = Month.CompareTo(key.Month);
+			if (result != 0) return result;
+			result = Day.CompareTo(key.Day);
+			return result;
+		}
+
+		public int ComparebyTime(object o)
+		{
+			SimpleDateTime key = o as SimpleDateTime;
+			int result = Hour.CompareTo(key.Hour);
+			if (result != 0) return result;
+			result = Min.CompareTo(key.Min);
+			return result;
+		}
+
 		public SimpleDateTime(DateTime dt)
 		{
 			this.Year  = (short)dt.Year;
@@ -76,33 +100,16 @@ namespace Homework_07_WPF_Organizer
 
 	public class Note : IComparable, IComparer<Note>   // Запись
 	{
-		public uint noteID { get; private set; }            // Уникальный ID заметки
-															// Генерируется на самом высоком уровне
-															// OrganizerClass
-		public SimpleDateTime DisplayDT { get; set; }      // Отображаемые дата и время записи в ежедневнике
+		public SimpleDateTime NoteDateTime { get; set; }      // Отображаемые дата и время записи в ежедневнике
 
-		public string DisplayDate
+		public string NoteDate
 		{
-			get { return $"{DisplayDT.Year:0000}.{DisplayDT.Month:00}.{DisplayDT.Day:00}"; }
-			//set
-			//{
-			//	DateTime tmpDT;
-			//	if (DateTime.TryParseExact(value,
-			//							   "HH:mm",
-			//							   CultureInfo.InvariantCulture,
-			//							   DateTimeStyles.NoCurrentDateDefault,
-			//							   out tmpDT)
-			//		)
-			//	{
-			//		DisplayDT.Hour = (sbyte)tmpDT.Hour;
-			//		DisplayDT.Min = (sbyte)tmpDT.Minute;
-			//	}
-			//}
+			get { return $"{NoteDateTime.Year:0000}.{NoteDateTime.Month:00}.{NoteDateTime.Day:00}"; }
 		}
 
-		public string DisplayTime
+		public string NoteTime
 		{
-			get { return $"{DisplayDT.Hour:00}:{DisplayDT.Min:00}"; }
+			get { return $"{NoteDateTime.Hour:00}:{NoteDateTime.Min:00}"; }
 			set 
 			{ 
 				DateTime tmpDT;
@@ -113,88 +120,10 @@ namespace Homework_07_WPF_Organizer
 										   out tmpDT)
 					)
 				{
-					DisplayDT.Hour = (sbyte)tmpDT.Hour;
-					DisplayDT.Min  = (sbyte)tmpDT.Minute;
+					NoteDateTime.Hour = (sbyte)tmpDT.Hour;
+					NoteDateTime.Min  = (sbyte)tmpDT.Minute;
 				}
 			}
-		}
-		public SimpleDateTime CreationDT { get; set; }      // Дата и время создания записи в ежедневнике
-		public string CreationDate
-		{
-			get { return $"{CreationDT.Year:0000}.{CreationDT.Month:00}.{CreationDT.Day:00}"; }
-			//set
-			//{
-			//	DateTime tmpDT;
-			//	if (DateTime.TryParseExact(value,
-			//							   "HH:mm",
-			//							   CultureInfo.InvariantCulture,
-			//							   DateTimeStyles.NoCurrentDateDefault,
-			//							   out tmpDT)
-			//		)
-			//	{
-			//		CreationDT.Hour = (sbyte)tmpDT.Hour;
-			//		CreationDT.Min = (sbyte)tmpDT.Minute;
-			//	}
-			//}
-		}
-
-		public string CreationTime
-		{
-			get { return $"{CreationDT.Hour:00}:{CreationDT.Min:00}"; }
-			//set
-			//{
-			//	DateTime tmpDT;
-			//	if (DateTime.TryParseExact(value,
-			//							   "HH:mm",
-			//							   CultureInfo.InvariantCulture,
-			//							   DateTimeStyles.NoCurrentDateDefault,
-			//							   out tmpDT)
-			//		)
-			//	{
-			//		CreationDT.Hour = (sbyte)tmpDT.Hour;
-			//		CreationDT.Min = (sbyte)tmpDT.Minute;
-			//	}
-			//}
-		}
-		public SimpleDateTime ChangeDT { get; set; }        // Дата и время последнего изменения записи
-		public SimpleDateTime DeleteDT { get; set; }        // Дата и время удаления записи
-
-		public string DeleteDate
-		{
-			get { return $"{DeleteDT.Year:0000}.{DeleteDT.Month:00}.{DeleteDT.Day:00}"; }
-			//set
-			//{
-			//	DateTime tmpDT;
-			//	if (DateTime.TryParseExact(value,
-			//							   "HH:mm",
-			//							   CultureInfo.InvariantCulture,
-			//							   DateTimeStyles.NoCurrentDateDefault,
-			//							   out tmpDT)
-			//		)
-			//	{
-			//		DeleteDT.Hour = (sbyte)tmpDT.Hour;
-			//		DeleteDT.Min = (sbyte)tmpDT.Minute;
-			//	}
-			//}
-		}
-
-		public string DeleteTime
-		{
-			get { return $"{DeleteDT.Hour:00}:{DeleteDT.Min:00}"; }
-			//set
-			//{
-			//	DateTime tmpDT;
-			//	if (DateTime.TryParseExact(value,
-			//							   "HH:mm",
-			//							   CultureInfo.InvariantCulture,
-			//							   DateTimeStyles.NoCurrentDateDefault,
-			//							   out tmpDT)
-			//		)
-			//	{
-			//		DeleteDT.Hour = (sbyte)tmpDT.Hour;
-			//		DeleteDT.Min = (sbyte)tmpDT.Minute;
-			//	}
-			//}
 		}
 
 		private string location;                            // Место
@@ -204,7 +133,6 @@ namespace Homework_07_WPF_Organizer
 			set
 			{
 				this.location = value;                      // При изменении места
-				this.ChangeDT.Update(DateTime.Now);         // устанавливаем дату и время изменений
 			}
 		}
 
@@ -212,24 +140,17 @@ namespace Homework_07_WPF_Organizer
 		public string Title
 		{
 			get { return this.title; }
-			set
-			{
-				this.title = value;                         // При изменении заголовка
-				this.ChangeDT.Update(DateTime.Now);         // устанавливаем дату и время изменений
-			}
+			set { this.title = value;}
 		}
 
 		private string text;                                // Текст заметки
 		public string Text
 		{
 			get { return this.text; }
-			set
-			{
-				this.text = value;                          // При изменении текста
-				this.ChangeDT.Update(DateTime.Now);         // устанавливаем дату и время изменений
-			}
+			set	{ this.text = value;}
 		}
 
+		public Note() { }
 		/// <summary>
 		/// Конструктор создаёт новую запись в заданных дате и времени
 		/// </summary>
@@ -237,34 +158,69 @@ namespace Homework_07_WPF_Organizer
 		/// <param name="noteDT">Дата и время отображения записи</param>
 		/// <param name="title">Заголовок записи</param>
 		/// <param name="text">Текст заметки</param>
-		public Note(uint noteID, SimpleDateTime noteDT, string location, string title, string text)
+		public Note(SimpleDateTime noteDT, string location, string title, string text)
 		{
 			// Помним, что конструктор класса вызывается при первом создании экземпляра класса через new
 			// Поэтому переменным память не выделена. Переменные не инициализированы
-			this.noteID		= noteID;            // передаём уникальный ID
-			this.DisplayDT  = new SimpleDateTime(noteDT);             // Отображаемые дата и время заметки 
-			this.CreationDT = new SimpleDateTime(DateTime.Now);       // Текущее значение даты и времени
-			this.ChangeDT	= new SimpleDateTime(DateTime.MinValue);  // Значение по умлочанию 01.01.0001 00:00:00
-			this.DeleteDT	= new SimpleDateTime(DateTime.MinValue);  // Значение по умлочанию 01.01.0001 00:00:00
+			this.NoteDateTime  = new SimpleDateTime(noteDT);             // Отображаемые дата и время заметки 
 			this.Location   = location;			// записываем место
 			this.Title		= title;            // записываем заголовок
 			this.Text		= text;             // и текст заметки
 		}
 
+		/// <summary>
+		/// Компаратор класса по умолчанию
+		/// </summary>
 		public int CompareTo(object o)
 		{
 			Note key = o as Note;
-			int result = DisplayDT.CompareTo(key.DisplayDT);
-			if (result != 0) return result;
-			result = noteID.CompareTo(key.noteID);
-			return result;
+			return NoteDateTime.CompareTo(key.NoteDateTime);
 		}
-
+		/// <summary>
+		/// Компаратор типа IComarer<Note> по умолчанию для класса Note  
+		/// </summary>
 		public int Compare(Note x, Note y)
 		{
 			return x.CompareTo(y);
 		}
+		// // //////////////////////////////////////////////
 
+		public int CompareToDate(object o)
+		{
+			Note key = o as Note;
+			return NoteDateTime.ComparebyDate(key.NoteDateTime);
+		}
+		public int CompareByDate(Note x, Note y)
+		{
+			return x.CompareToDate(y);
+		}
+		// //////////////////////////////////////////////
+
+		public int CompareToTime(object o)
+		{
+			Note key = o as Note;
+			return NoteDateTime.ComparebyTime(key.NoteDateTime);
+		}
+
+		public int CompareByTime(Note x, Note y)
+		{
+			return x.CompareToTime(y);
+		}
+
+		public int CompareByLocation(Note x, Note y)
+		{
+			return x.Location.CompareTo(y.Location);
+		}
+
+		public int CompareByTitle(Note x, Note y)
+		{
+			return x.Title.CompareTo(y.Title);
+		}
+
+		public int CompareByText(Note x, Note y)
+		{
+			return x.Text.CompareTo(y.Text);
+		}
 	}
 
 	class DayClass
@@ -281,9 +237,9 @@ namespace Homework_07_WPF_Organizer
 		/// </summary>
 		/// <param name="noteDT">Дата и время записи</param>
 		/// <param name="note">Запись</param>
-		public void AddNote(uint noteID, SimpleDateTime noteDT, string location, string title, string text)
+		public void AddNote(SimpleDateTime noteDT, string location, string title, string text)
 		{
-			Note newNote = new Note(noteID, noteDT, location, title, text);
+			Note newNote = new Note(noteDT, location, title, text);
 			this.Day.Add(newNote);                  // Добавляем запись в список
 			this.Day.Sort(newNote.Compare);         // сортируем по времени и ИД
 		}
@@ -309,14 +265,13 @@ namespace Homework_07_WPF_Organizer
 		public Note RemoveNote(uint noteID, SimpleDateTime noteDT)
         {
 			foreach (var e in this.Day)
-				if (e.noteID == noteID & e.DisplayDT == noteDT)
+				if (e.NoteDateTime == noteDT)
 				{
 					// Если я правильно понимаю, то е - это ссылка на объект. И при удалении из списка
 					// объект в памяти остаётся, просто из списка удаляется ссылка.
 					// но сама ссылка продолжает указывать на тот же объект
 					
 					this.Day.Remove(e);					// Удаляем объект из списка
-					e.DeleteDT.Update(DateTime.Now);	// Помещаем текущие дату и время в ДВ удаления
 					return e;							// Возвращаем эту запись
 				}
 			return null;				// Запись с таким ИД и временем не найдена
@@ -381,14 +336,16 @@ namespace Homework_07_WPF_Organizer
 	// при случайном выборе дня, для сохранения иерархии и загрузки из иерархии
 	class OrganizerClass
 	{
-		public uint IDcounter { get; private set; }		// Уникальный номер для следующей заметки
-		public uint Count	  { get; private set; }        // Количество записей в ежедневнике
+		public uint Count { get; private set; }        // Количество записей в ежедневнике
 
 		// Список лет в ежедневнике
-		public SortedList<short,YearClass> Organizer { get; set; }
+		public SortedList<short, YearClass> Organizer { get; set; }
 
 		// Корзина
 		public List<Note> RecycleBin { get; set; }
+
+		// Рабочий список. Для сохранения в файл, чтения из файла, поиска
+		private List<Note> WorkingList { get; set; }
 
 		/// <summary>
 		/// Конструктор для класса ежедневник. Создаёт экземпляр для текущего года.
@@ -396,11 +353,11 @@ namespace Homework_07_WPF_Organizer
 		/// </summary>
 		public OrganizerClass()             // Когда только создаём ежедневник
 		{
-			IDcounter = 0;                  // Обнуляем счётчик уникальных номеров
-			Count	  = 0;                  // Обнуляем счётчик записей в ежедневнике
+			Count = 0;                  // Обнуляем счётчик записей в ежедневнике
 
 			Organizer = new SortedList<short, YearClass>(); // Создаём пустой органайзер
-			RecycleBin = new List<Note>();					// Создаём пустую корзину
+			RecycleBin = new List<Note>();                 // Создаём пустую корзину
+			WorkingList = new List<Note>();                 // Создаём пустой рабочий список				
 		}
 
 		#region Note Operations: Add, Change, Remove
@@ -409,84 +366,40 @@ namespace Homework_07_WPF_Organizer
 		/// Добавляет в ежедневник запись в конкретную дату и время, с заданными типом, заголовком и текстом.
 		/// При добавлении генерирует уникальный ID записи.
 		/// </summary>
-		/// <param name="displayDT">Дата и время, в которое показана запись</param>
+		/// <param name="noteDateTime">Дата и время, в которое показана запись</param>
+		/// <param name="location">Место мероприятия</param>
 		/// <param name="title">Заголовок записи</param>
 		/// <param name="text">Текст записи</param>
-		/// <param name="typeOfNote">Тип записи - заметка, событие или дело</param>
-		public bool AddNote(SimpleDateTime displayDT, string location, string title, string text)
+		public void AddNote(SimpleDateTime noteDateTime, string location, string title, string text)
 		{
-			short currYear = displayDT.Year;
-			sbyte currMon  = displayDT.Month;
-			sbyte currDay  = displayDT.Day;
-			DayClass dayToAdd;
+			short currYear = noteDateTime.Year;
+			sbyte currMon = noteDateTime.Month;
+			sbyte currDay = noteDateTime.Day;
 
 			// Проверка, выделена ли память для этой даты
 			// Инициализирован ли год?
 			if (!Organizer.ContainsKey(currYear))
 			{
 				YearClass yearToAdd = new YearClass(currYear);
-				Organizer.Add(currYear, yearToAdd);
+				Organizer.Add(currYear, yearToAdd);                 // создаём новый год
 			}
 
 			// Инициализирован ли месяц для этой даты?
 			if (Organizer[currYear][currMon] == null)
-				Organizer[currYear].CreateMonth(currMon);
+				Organizer[currYear].CreateMonth(currMon);           // создаём новый месяц
 
 			// Инициализирован ли день?
 			if (Organizer[currYear][currMon][currDay] == null)
-			{
-				Organizer[currYear].CreateDay(currMon, currDay);	// создаём новый день
-				dayToAdd = Organizer[currYear][currMon][currDay];   // присваиваем ради сокращения записи
+				Organizer[currYear].CreateDay(currMon, currDay);    // создаём новый день
 
-				Count++;
-				IDcounter++;
-				dayToAdd.AddNote(IDcounter, displayDT, location, title, text);
-				return true;
-			}
-
-			// Если пришли сюда, значит в дне есть список записей. Возможно он пуст.
-			dayToAdd = Organizer[currYear][currMon][currDay];
-
-			// Существует ли уже запись с такими же временем, типом, заголовком, текстом?
-			//
-			// Если существует и полностью всё совпадает - то значит, мы просто ничего не добавляем
-			// Если совпадает дата, но время отличается - добавляем
-			// Если совпадает дата и время, но заголовок и/или текст заметки оличается - добавляем
-			// Если совпадает дата и время, и заголовок с текстом, - не добавляем.
-
-			// Если в дне список записей пуст, то цикл просто не выполнится ни разу
-			foreach(var e in dayToAdd.Day)
-				if (e.DisplayDT.Hour == displayDT.Hour)	// Запись с таким временем 
-				if (e.DisplayDT.Min  == displayDT.Min)  // уже существует?
-				if (e.Location == location)				// Место совпадает
-				if (e.Title == title)					// Заголовок и текст записи
-				if (e.Text  == text)					// совпадает?
-					return false;			// ничего не добавляем!!! Такая заметка уже есть!!!
-	
-			// Специально сделал несколько  if-ов, а не составное выражение выр1 & выр2 & выр3 
-			// Потому что в логическом выражении вычисляются обе части выражения, 
-			// а сравнение текста - это оч. долго
-
+			// Добавляем запись
+			Organizer[currYear][currMon][currDay].AddNote(noteDateTime, location, title, text);
 			Count++;
-			IDcounter++;
-			dayToAdd.AddNote(IDcounter, displayDT, location, title, text);
-			return true;
 		}
 
-		/// <summary>
-		/// Перемещает запись из указанной даты и с указанным ID в корзину
-		/// </summary>
-		/// <param name="id">Уникальный идентификатор записи</param>
-		/// <param name="noteDT">Дата и время записи</param>
-		public void RemoveNote(uint noteID, SimpleDateTime noteDT)
+		private void AddNote(Note note)
 		{
-			Note noteToRemove =
-				Organizer[noteDT.Year][noteDT.Month][noteDT.Day].RemoveNote(noteID, noteDT);
-			if (noteToRemove != null)
-			{
-				RecycleBin.Add(noteToRemove);
-				Count--;
-			}
+			AddNote(note.NoteDateTime, note.Location, note.Title, note.Text);
 		}
 
 		/// <summary>
@@ -496,27 +409,12 @@ namespace Homework_07_WPF_Organizer
 		public void RemoveNote(Note noteToRemove)
 		{
 			//if (noteToRemove == null) return;
-			short yyyy = noteToRemove.DisplayDT.Year;
-			sbyte mm   = noteToRemove.DisplayDT.Month;
-			sbyte dd   = noteToRemove.DisplayDT.Day;
+			short yyyy = noteToRemove.NoteDateTime.Year;
+			sbyte mm = noteToRemove.NoteDateTime.Month;
+			sbyte dd = noteToRemove.NoteDateTime.Day;
 			Organizer[yyyy][mm][dd].Day.Remove(noteToRemove);
 			Count--;
-			noteToRemove.DeleteDT.Update(DateTime.Now);
 			RecycleBin.Add(noteToRemove);
-		}
-
-		/// <summary>
-		/// Возвращает указатель на список записей указанного дня
-		/// </summary>
-		/// <param name="dt">указанный день</param>
-		/// <returns>Указатель на список записей указнного дня, либо null - если день не был активирован
-		/// либо в дне нет записей</returns>
-		public List<Note> GetDayList(DateTime dt)
-		{
-			SimpleDateTime currDT = new SimpleDateTime(dt);
-			if (IsDateActivated(currDT))
-				return this.Organizer[currDT.Year][currDT.Month][currDT.Day].Day;
-			return null;
 		}
 
 		/// <summary>
@@ -541,8 +439,8 @@ namespace Homework_07_WPF_Organizer
 		private bool IsDateActivated(SimpleDateTime dt)
 		{
 			short currYear = dt.Year;
-			sbyte currMon  = dt.Month;
-			sbyte currDay  = dt.Day;
+			sbyte currMon = dt.Month;
+			sbyte currDay = dt.Day;
 
 			// Проверка, выделена ли память для этой даты
 			// Инициализирован ли год?
@@ -563,9 +461,9 @@ namespace Homework_07_WPF_Organizer
 		/// <param name="deletedNote">Выбранная запись</param>
 		public void RestoreNoteFromBin(Note deletedNote)
 		{
-			short yyyy = deletedNote.DisplayDT.Year;
-			sbyte mm = deletedNote.DisplayDT.Month;
-			sbyte dd = deletedNote.DisplayDT.Day;
+			short yyyy = deletedNote.NoteDateTime.Year;
+			sbyte mm = deletedNote.NoteDateTime.Month;
+			sbyte dd = deletedNote.NoteDateTime.Day;
 			Organizer[yyyy][mm][dd].Day.Add(deletedNote);
 			Organizer[yyyy][mm][dd].Day.Sort();
 			RecycleBin.Remove(deletedNote);
@@ -590,69 +488,190 @@ namespace Homework_07_WPF_Organizer
 		}
 		#endregion Note Operations: Add, Change, Remove, RestoreFromBin
 
+		/// <summary>
+		/// Ищет все записи в диапазоне дат, в которых поля содержат подстроки
+		/// Если какой-либо параметр равен null, то проверка этого параметра не осуществляется
+		/// </summary>
+		/// <param name="startDt">Поиск записей с этой даты</param>
+		/// <param name="endDt">До этой даты</param>
+		/// <param name="time">С таким временем</param>
+		/// <param name="location">Содержащим такую подстроку в поле Место</param>
+		/// <param name="title">Содержащим такую подстроку в поле Заголовок</param>
+		/// <param name="text">Содержащим такую подстроку в поле Текст</param>
+		/// <returns></returns>
+		public List<Note> Search(DateTime? startDt, DateTime? endDt,
+								 string time, string location, string title, string text)
+		{
+			List<Note> WorkingList = new List<Note>();
+			// Ежедневник пуст
+			if (this.Count == 0) return null;
+			
+			SimpleDateTime startDate = new SimpleDateTime(DateTime.MinValue);
+			SimpleDateTime   endDate = new SimpleDateTime(DateTime.MaxValue);
+
+
+			if (startDt == null)
+			{
+				// Если начальная дата не задана, тогда она равна 1 января первого года в ежедневнике
+				startDate.Year  = Organizer.First().Value.YearValue;
+				startDate.Month = 1;
+				startDate.Day   = 1;
+			}
+			else
+			{
+				startDate = new SimpleDateTime((DateTime)startDt);
+			}
+
+			if (endDt == null)
+			{
+				// Если конечная дата не задана, тогда она равна 31 декабря последнего года в ежедневнике
+				endDate.Year = Organizer.Last().Value.YearValue;
+				endDate.Month = 12;
+				endDate.Day = 31;
+			}
+			else
+			{
+				endDate = new SimpleDateTime((DateTime)endDt);
+			}
+
+			// Чисто для сокращения записи введём переменные
+			short sY = startDate.Year;
+			sbyte sM = startDate.Month, sMindex;
+			sbyte sD = startDate.Day, sDindex;
+			short eY = endDate.Year;
+			sbyte eM = endDate.Month, eMindex;
+			sbyte eD = endDate.Day, eDindex;
+
+			foreach (var year in Organizer)                     // Берём по очереди каждый год.
+			{
+				if (sY <= year.Value.YearValue &&				// Если год в диапазоне дат
+					year.Value.YearValue <= eY)
+				{
+					if (sY == year.Value.YearValue)				// Если текущий год, год начальной даты	
+						sMindex = sM;							// устанавливаем, с какого месяца искать
+					else sMindex = 1;							// иначе ищем с 1-ого месяца
+
+					if (eY == year.Value.YearValue)				// Если текущий год, год конечной даты
+						eMindex = eM;							// устанавливаем, до какого месяца искать
+					else eMindex = 12;							// иначе ищем до декабря
+
+					for (sbyte i = sMindex; i <= eMindex; i++)	// В году каждый месяц в диапазоне дат
+					{
+						if (year.Value[i] != null)				// Если месяц активирован,
+						{
+							if (sY == year.Value.YearValue &&	// год - начальной даты		
+								sM == i)						// и месяц начальной даты
+								sDindex = sD;					// устанавливаем день, с какого искать
+							else sDindex = 1;					// иначе ищем с 1-ого дня месяца
+
+							if (eY == year.Value.YearValue &&	// год - конечной даты
+								eM == i)						// и месяц конечной даты
+								eDindex = eD;					// устанавливаем день, до какого искать
+							else								// иначе ищем до посл. дня месяца
+								eDindex = (sbyte)(year.Value[i].Length-1);
+
+							for (sbyte j = sDindex; j <= eDindex; j++)      // берём очередной день в месяце.
+							{
+								if (year.Value[i][j] != null)			// Если день активирован,
+								{
+									List<Note> day = year.Value[i][j].Day;
+									if (day.Count != 0)						// и не пуст
+
+										foreach (var note in day)			// то берём каждую запись дня
+										{
+										bool     isTime = String.IsNullOrEmpty(time) ?
+																			true : 
+																			(note.NoteTime == time);
+										bool isLocation = String.IsNullOrEmpty(location) ? 
+																			true : 
+																			note.Location.Contains(location);
+										bool	isTitle = String.IsNullOrEmpty(title) ?
+																			true :
+																			note.Title.Contains(title);
+										bool	 isText = String.IsNullOrEmpty(text) ? 
+																			true :
+																			note.Text.Contains(text);
+											if (isTime && isLocation && isTitle && isText)
+											WorkingList.Add(note);      // и записываем в рабочий список
+										}
+								}
+
+							}	// foreach по каждому дню месяца
+						}	// проверка месяц активирован?
+					} // for по месяцам года
+				} // if проверка год в диапазоне
+			} // foreach перебор лет
+
+			//foreach (var note in source)
+			//	if (note.NoteDateTime.CompareTo(startDate) >= 0 &&
+			//		note.NoteDateTime.CompareTo(endDate) <= 0)
+			//		AddNote(note);
+
+			return WorkingList;
+		}
 
 		#region File Operations
 
 		/// <summary>
-		/// Метод загрузки ежедневника из файла. Тип файла определяется по расширению. Текущий ежедневник стирается
+		/// Собирает все записи ежедневника в один список
 		/// </summary>
-		/// <param name="path">Путь к файлу</param>
-		public void Upload(string path)
-		{ }
+		/// <returns></returns>
+		public List<Note> CollectAllNotesToList()
+		{
+			WorkingList.Clear();                                // Очищаем рабочий список
 
-		/// <summary>
-		/// Метод загрузки ежедневника из файла CSV. Текущий ежедневник стирается
-		/// </summary>
-		/// <param name="path">Путь к файлу</param>
-		private void UploadCSV(string path)
-		{ }
-
-		/// <summary>
-		/// Метод загрузки ежедневника из файла XML. Текущий ежедневник стирается
-		/// </summary>
-		/// <param name="path">Путь к файлу</param>
-		private void UploadXML(string path)
-		{ }
-
-		public void Save(string path)
-		{ }
-
-		public enum FileType { CSV = 0, XML = 1}
-
-		/// <summary>
-		/// Сохраняет ежедневник в файл в формате CSV или XML
-		/// Метод сохранения не сохраняет предыдущие редакции каждой записи, 
-		/// т.е. берёт из стека записей текущие значения title, text и дат
-		/// </summary>
-		/// <param name="path">Путь файла для сохранения</param>
-		/// <param name="fileType">Тип файла для сохранения CSV = 0, XML = 1</param>
-		public void SaveAs(string path, FileType fileType)
-		{ 
+			foreach (var year in Organizer)                     // Берём по очереди каждый год.
+				for (sbyte i = 1; i <= 12; i++)                 // В году каждый месяц.
+					if (year.Value[i] != null)                  // Если месяц активирован,
+						foreach (var day in year.Value[i])      // то берём каждый день в месяце.
+							if (day != null)                    // Если день активирован,
+								foreach (var note in day.Day)   // то берём каждую запись дня
+									WorkingList.Add(note);      // и записываем в рабочий список
+			return WorkingList;
 		}
 
 		/// <summary>
-		/// Загружает записи ежедневника из файла, тип которого определяется по расширению (CSC или XML)
-		/// и вставляет их в существующий ежедневник. Запись из файла, полностью идентичная по дате, времени
-		/// и содержанию записи в текущем ежедневнике, игнорируется.
+		/// Десериализация заметок из XML файла
 		/// </summary>
-		/// <param name="path">Путь файла записей</param>
-		public void UploadAndMerge (string path)
+		/// <param name="source">Список заметок</param>
+		/// <param name="startDate">Дата, с какой добавлять. null - с начала</param>
+		/// <param name="endDate">Дата, до какой добавлять. null - до конца</param>
+		/// <param name="replaceNotes">Заменяем содержимое ежедневника или добавляем данные</param>
+		public void UploadXML(List<Note> source, 
+							   DateTime? startDt, 
+							   DateTime? endDt,
+							   bool replaceNotes)
 		{
+			SimpleDateTime startDate = new SimpleDateTime(DateTime.MinValue);
+			SimpleDateTime   endDate = new SimpleDateTime(DateTime.MaxValue);
+			// Если true - очищаем ежедневник
+			if (replaceNotes) Organizer.Clear();
+			if (startDt != null) startDate = new SimpleDateTime((DateTime)startDt);
+			if (endDt   != null)   endDate = new SimpleDateTime((DateTime)endDt);
 
-		}
+			if (startDt == null && endDt == null)   // просто добавляем все данные
+			{
+				foreach (var note in source) AddNote(note);
+				return;
+			}
+			if (startDt == null)					// добавляем все с начала
+			{
+				foreach (var note in source)
+					if (note.NoteDateTime.CompareTo(endDate) <= 0) AddNote(note);
+				return;
+			}
 
-		/// <summary>
-		/// Загружает блок записей ежедневника из файла, тип которого определяется по расширению (CSC или XML)
-		/// и вставляет их в существующий ежедневник. Границы блока определяются начальной и конечной датами.
-		/// Запись из файла, полностью идентичная по дате, времени и содержанию записи в текущем ежедневнике,
-		/// игнорируется.
-		/// </summary>
-		/// <param name="path">Путь файла записей</param>
-		/// <param name="start">Дата, с которой надо загружать</param>
-		/// <param name="finish">Дата, до которой включительно надо загружать записи</param>
-		public void UploadAndMerge(string path, DateTime start, DateTime finish)
-		{
+			if (endDt == null)                      // добавляем все до конца
+			{
+				foreach (var note in source)
+					if (note.NoteDateTime.CompareTo(startDate) >= 0) AddNote(note);
+				return;
+			}
 
+			foreach (var note in source)
+				if (note.NoteDateTime.CompareTo(startDate) >= 0 &&
+					note.NoteDateTime.CompareTo(endDate) <= 0)
+					AddNote(note);
 		}
 
 		#endregion File Operations

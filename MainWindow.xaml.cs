@@ -13,6 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
+using System.Xml.Serialization;
+
 
 namespace Homework_07_WPF_Organizer
 {
@@ -24,6 +27,7 @@ namespace Homework_07_WPF_Organizer
 		// Собственно ежедневник
 		OrganizerClass myOrganizer = new OrganizerClass();
 
+		DateTime tmpDT;
 		// Видимая на экране дата ежедневника
 		public SimpleDateTime currDate;
 		
@@ -34,9 +38,9 @@ namespace Homework_07_WPF_Organizer
 			// Специально выделяем одну переменную, в которую записываем текущую дату
 			// Делаем на случай, если программа будет работать в 00:00,
 			// чтобы текущая дата (currDate) и дата на экране были одинаковыми 
-			DateTime tmpDT = DateTime.Now;
+			tmpDT = DateTime.Now;
 			currDate = new SimpleDateTime(tmpDT);
-
+			MyCalendar.DisplayDate = tmpDT;
 			// Выводим дату на экран
 			currentDate.Text = $"{tmpDT.ToString("dddd, d MMMM yyyy г.")}";
 		}
@@ -95,7 +99,7 @@ namespace Homework_07_WPF_Organizer
 
 			for (int i = 0; i < numberOfNotes; i++)
 			{
-				rYear  = (short)r.Next(startYear, endYear);
+				rYear  = (short)r.Next(startYear, endYear+1);
 				rMonth = (sbyte)r.Next(1, 13);
 				if (DateTime.IsLeapYear(rYear) & rMonth == 2) 
 					 rDay = (sbyte)r.Next(1, 30); // високосный февраль
@@ -111,7 +115,12 @@ namespace Homework_07_WPF_Organizer
 				rDT = new SimpleDateTime(rYear, rMonth, rDay, rHour, rMin);
 				myOrganizer.AddNote(rDT, rLocation, rTitle, rText);
 			}
-			currDate = new SimpleDateTime(DateTime.Now);
+			tmpDT    = DateTime.Now;
+			currDate = new SimpleDateTime(tmpDT);
+
+			// Выводим дату на экран
+			currentDate.Text = $"{tmpDT.ToString("dddd, d MMMM yyyy г.")}";
+			MyCalendar.DisplayDate = tmpDT;
 			dayToShowList.ItemsSource = myOrganizer.GetDayList(currDate);
 			
 			dayToShowList.Items.Refresh();
@@ -130,15 +139,10 @@ namespace Homework_07_WPF_Organizer
 			NewNote newNoteWindow = new NewNote(currDate);
 			newNoteWindow.ShowDialog();
 			if(newNoteWindow.DialogResult == true)
-			{
-				if (!myOrganizer.AddNote(newNoteWindow.selectedDT,
-										 newNoteWindow.enterLocation.Text,
-										 newNoteWindow.enterTitle.Text,
-										 newNoteWindow.enterText.Text))
-				{
-					MessageBox.Show("Идентичная запись уже существует!");
-				}
-			}
+			myOrganizer.AddNote(newNoteWindow.selectedDT,
+								newNoteWindow.enterLocation.Text,
+								newNoteWindow.enterTitle.Text,
+								newNoteWindow.enterText.Text);
 			dayToShowList.ItemsSource = myOrganizer.GetDayList(currDate);
 			dayToShowList.Items.Refresh();
 		}
@@ -157,16 +161,118 @@ namespace Homework_07_WPF_Organizer
 
 		private void Click_SearchNote(object sender, RoutedEventArgs e)
 		{
+			SearchMenu searchMenuWin = new SearchMenu();
+			bool? result = searchMenuWin.ShowDialog();
+
+			if (result != true) return;
+
+			// Проверим, не ялвяется ли дата начала больше даты конца
+			DateTime? sD = searchMenuWin.startDatePicker.SelectedDate;
+			DateTime? eD = searchMenuWin.endDatePicker.SelectedDate;
+			DateTime? tmpD;
+
+			if (sD != null && eD != null && sD > eD)
+			{
+				tmpD = sD; sD = eD; eD = tmpD;
+			}
+
+			List<Note> workList = 
+			myOrganizer.Search(sD, eD,
+							   searchMenuWin.enterTime.Text,
+							   searchMenuWin.enterLocation.Text,
+							   searchMenuWin.enterTitle.Text,
+							   searchMenuWin.enterText.Text);
+			WorkingList workListWin = new WorkingList(workList);
+			workListWin.ShowDialog();
 
 		}
 
 		private void Click_UploadFromXLM(object sender, RoutedEventArgs e)
 		{
+			UploadFileMenu uploadFileMenuWin = new UploadFileMenu();
+			bool? haveFileName = uploadFileMenuWin.ShowDialog();
+
+			// Была ли нажата клавиша Ок?
+			if (haveFileName != true) return;		// Если нет, то выходим
+
+			// Даже если был нажат Ок, был ли выбран файл?
+			if (uploadFileMenuWin.result != true) return;	// Если нет, то выходим
+			
+			// Полное имя файла для загрузки записей
+			string filepathname = uploadFileMenuWin.filepathname;
+			
+			// Дата, с которой грузим записи. Если null - то с начала
+			DateTime? startDate = uploadFileMenuWin.startDatePicker.SelectedDate;
+			
+			// Дата, до которой грузим записи. Если null - то до конца
+			DateTime?   endDate = uploadFileMenuWin.endDatePicker.SelectedDate;
+
+			// Очищаем ежедневник и вставляем новые данные, или добавляем к существующим
+			bool   replaceNotes = uploadFileMenuWin.replaceNotes;
+
+			List<Note> tmp = new List<Note>();
+			// Создаем сериализатор на основе указанного типа 
+			XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<Note>));
+
+			// Создаем поток для чтения данных
+			Stream fStream = new FileStream(filepathname, FileMode.Open, FileAccess.Read);
+
+			// Запускаем процесс десериализации
+			tmp = xmlSerializer.Deserialize(fStream) as List<Note>;
+
+			// Закрываем поток
+			fStream.Close();
+
+			myOrganizer.UploadXML(tmp, startDate, endDate, replaceNotes);
+
+			tmpDT = DateTime.Now;
+			currDate = new SimpleDateTime(tmpDT);
+
+			// Выводим дату на экран
+			currentDate.Text = $"{tmpDT.ToString("dddd, d MMMM yyyy г.")}";
+			MyCalendar.DisplayDate = tmpDT;
+
+			dayToShowList.ItemsSource = myOrganizer.GetDayList(currDate);
+
+			dayToShowList.Items.Refresh();
 
 		}
 
+		/// <summary>
+		/// Сохраняет ежедневник в XML файл. Предлагает выбрать путь и имя файла
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void Click_SaveToXLM(object sender, RoutedEventArgs e)
 		{
+
+			List<Note> tmp = myOrganizer.CollectAllNotesToList();
+			// Configure save file dialog box
+			Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+			dlg.FileName = "Organizer"; // Default file name
+			dlg.DefaultExt = ".xml"; // Default file extension
+			dlg.Filter = "XML documents (.xml)|*.xml"; // Filter files by extension
+
+			// Show save file dialog box
+			bool? result = dlg.ShowDialog();
+
+			// Process save file dialog box results
+			if (result != true) return;
+
+			// Save document
+			string Path = dlg.FileName;
+
+			// Создаем сериализатор на основе указанного типа 
+			XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<Note>));
+
+			// Создаем поток для сохранения данных
+			Stream fStream = new FileStream(Path, FileMode.OpenOrCreate, FileAccess.Write);
+
+			// Запускаем процесс сериализации
+			xmlSerializer.Serialize(fStream, tmp);
+
+			// Закрываем поток
+			fStream.Close();
 
 		}
 

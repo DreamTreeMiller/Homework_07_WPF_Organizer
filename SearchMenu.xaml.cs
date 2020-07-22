@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,27 +15,18 @@ using System.Windows.Shapes;
 namespace Homework_07_WPF_Organizer
 {
 	/// <summary>
-	/// Interaction logic for NewNote.xaml
+	/// Interaction logic for SearchMenu.xaml
 	/// </summary>
-	public partial class NewNote : Window
+	public partial class SearchMenu : Window
 	{
-		public SimpleDateTime selectedDT = new SimpleDateTime(DateTime.Now);
-		
-		public NewNote(SimpleDateTime currDate)
+		public SearchMenu()
 		{
 			InitializeComponent();
-			selectedDT.Year  = currDate.Year;
-			selectedDT.Month = currDate.Month;
-			selectedDT.Day   = currDate.Day;
-			DateTime dt = new DateTime(currDate.Year, currDate.Month, currDate.Day);
-			currentDate.Text = $"{dt.ToString("dddd, d MMMM yyyy г.")}";
-			  enterTime.Text = $"{selectedDT.Hour:00}:{selectedDT.Min:00}";
 		}
 
 		private void btnOk_Click(object sender, RoutedEventArgs e)
 		{
 			this.DialogResult = true;
 		}
-
 	}
 }
