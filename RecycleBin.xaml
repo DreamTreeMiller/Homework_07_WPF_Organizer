@@ -1,0 +1,121 @@
+﻿<Window x:Class="Homework_07_WPF_Organizer.RecycleBin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Homework_07_WPF_Organizer"
+        mc:Ignorable="d"
+        Title="RecycleBin" Height="450" Width="800">
+    <Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="2*" 
+							  MinWidth="325"
+							  />
+			<ColumnDefinition Width="*"  MinWidth="200"/>
+		</Grid.ColumnDefinitions>
+
+		<ListView x:Name="rbListView"
+				  Grid.Column="0"
+				  Margin="10"
+				  HorizontalContentAlignment="Stretch"
+				  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+				  
+				  >
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="Дата" 
+									DisplayMemberBinding="{Binding DisplayDate}"
+									Width="Auto"
+									/>
+					<GridViewColumn Header="Время" 
+									DisplayMemberBinding="{Binding DisplayTime}"
+									Width="Auto"
+									/>
+					<GridViewColumn Header="Del Date" 
+									DisplayMemberBinding="{Binding DeleteDate}"
+									Width="Auto"
+									/>
+					<GridViewColumn Header="Del Time" 
+									DisplayMemberBinding="{Binding DeleteTime}"
+									Width="Auto"
+									/>
+					<GridViewColumn Header="Заголовок" 
+									DisplayMemberBinding="{Binding Title}"
+									Width="Auto"
+									/>
+					<GridViewColumn Header="Текст" 
+									DisplayMemberBinding="{Binding Text}"
+									Width="Auto"
+									/>
+					<GridViewColumn Header="Место" 
+									DisplayMemberBinding="{Binding Location}"
+									Width="Auto"
+									/>
+
+				</GridView>
+			</ListView.View>
+		</ListView>
+		<StackPanel
+			Grid.Column="1"
+			>
+			<Button Name="RestroreNote" 
+					Content="Восстановить запись"
+					Width="180"
+					Margin="20"
+					BorderThickness="0"
+					Background="WhiteSmoke"
+					Click="Click_RestoreNote" 
+					VerticalAlignment="Center">
+				<Button.Resources>
+					<Style TargetType="Border">
+						<Setter Property="CornerRadius" Value="5"/>
+					</Style>
+				</Button.Resources>
+			</Button>
+			<Button Name="DeleteForever" 
+					Content="Удалить запись навсегда"
+					Width="180"
+					Margin="20"
+					BorderThickness="0"
+					Background="WhiteSmoke"
+					VerticalAlignment="Center" 
+					Click="DeleteForever_Click">
+				<Button.Resources>
+					<Style TargetType="Border">
+						<Setter Property="CornerRadius" Value="5"/>
+					</Style>
+				</Button.Resources>
+			</Button>
+			<Button Name="EmptyBin" 
+					Content="Очистить корзину"
+					Width="180"
+					Margin="20"
+					BorderThickness="0"
+					Background="WhiteSmoke"
+					VerticalAlignment="Center" Click="EmptyBin_Click" 
+					>
+				<Button.Resources>
+					<Style TargetType="Border">
+						<Setter Property="CornerRadius" Value="5"/>
+					</Style>
+				</Button.Resources>
+			</Button>
+			<Button Name="ExitButton" 
+					Content="Выход"
+					Width="180"
+					Margin="20"
+					BorderThickness="0"
+					Background="WhiteSmoke"
+					Click="Click_ExitButton" 
+					IsCancel="True" 
+					VerticalAlignment="Center"
+					>
+				<Button.Resources>
+					<Style TargetType="Border">
+						<Setter Property="CornerRadius" Value="5"/>
+					</Style>
+				</Button.Resources>
+			</Button>
+		</StackPanel>
+	</Grid>
+</Window>

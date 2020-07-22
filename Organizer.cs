@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,19 +7,18 @@ using System.Threading.Tasks;
 
 namespace Homework_07_WPF_Organizer
 {
-	public class KeyStruct : IComparable
+	public class SimpleDateTime : IComparable
 	{
-		public short Year { get; set; }
+		public short Year  { get; set; }
 		public sbyte Month { get; set; }
-		public sbyte Day { get; set; }
+		public sbyte Day   { get; set; }
 
-		public sbyte Hour { get; set; }
-		public sbyte Min { get; set; }
-		public uint ID { get; private set; }
+		public sbyte Hour  { get; set; }
+		public sbyte Min   { get; set; }
 
 		public int CompareTo(object o)
 		{
-			KeyStruct key = o as KeyStruct;
+			SimpleDateTime key = o as SimpleDateTime;
 			int result = Year.CompareTo(key.Year);
 			if (result != 0) return result;
 			result = Month.CompareTo(key.Month);
@@ -28,63 +28,8 @@ namespace Homework_07_WPF_Organizer
 			result = Hour.CompareTo(key.Hour);
 			if (result != 0) return result;
 			result = Min.CompareTo(key.Min);
-			if (result != 0) return result;
-			result = ID.CompareTo(key.ID);
 			return result;
 		}
-
-		public KeyStruct(DateTime dt, uint id)
-		{
-			this.Year  = (short)dt.Year;
-			this.Month = (sbyte)dt.Month;
-			this.Day   = (sbyte)dt.Day;
-			this.Hour  = (sbyte)dt.Hour;
-			this.Min   = (sbyte)dt.Minute;
-			this.ID    = id;
-		}
-
-		public KeyStruct(short yyyy, sbyte mm, sbyte dd, sbyte hh, sbyte min, uint id)
-		{
-			this.Year	= yyyy;
-			this.Month	= mm;
-			this.Day	= dd;
-			this.Hour	= hh;
-			this.Min	= min;
-			this.ID		= id;
-		}
-
-		public KeyStruct(SimpleDateTime dt, uint id)
-		{
-			this.Year  = (short)dt.Year;
-			this.Month = (sbyte)dt.Month;
-			this.Day   = (sbyte)dt.Day;
-			this.Hour  = (sbyte)dt.Hour;
-			this.Min   = (sbyte)dt.Min;
-			this.ID    = id;
-		}
-		public override string ToString()
-		{
-			return $"{this.Day,2:00}-{this.Month,2:00}-{this.Year,4} " +
-				   $"{this.Hour,2:00}:{this.Min,2:00}";
-		}
-
-		public string ToStringWithID()
-		{
-			return $"{this.ID,5} " +
-				   $"{this.Day,2:00}-{this.Month,2:00}-{this.Year,4} " +
-				   $"{this.Hour,2:00}:{this.Min,2:00}";
-		}
-	}
-
-	public struct SimpleDateTime
-	{
-		public short Year  { get; set; }
-		public sbyte Month { get; set; }
-		public sbyte Day   { get; set; }
-
-		public sbyte Hour  { get; set; }
-		public sbyte Min   { get; set; }
-
 		public SimpleDateTime(DateTime dt)
 		{
 			this.Year  = (short)dt.Year;
@@ -93,6 +38,16 @@ namespace Homework_07_WPF_Organizer
 			this.Hour  = (sbyte)dt.Hour;
 			this.Min   = (sbyte)dt.Minute;
 		}
+
+		public SimpleDateTime(SimpleDateTime dt)
+		{
+			this.Year  = dt.Year;
+			this.Month = dt.Month;
+			this.Day   = dt.Day;
+			this.Hour  = dt.Hour;
+			this.Min   = dt.Min;
+		}
+
 
 		public SimpleDateTime(short yyyy, sbyte mm, sbyte dd, sbyte hh, sbyte min)
 		{
@@ -103,207 +58,222 @@ namespace Homework_07_WPF_Organizer
 			this.Min   = min;
 		}
 
+		public void Update(DateTime dt)
+        {
+			this.Year  = (short)dt.Year;
+			this.Month = (sbyte)dt.Month;
+			this.Day   = (sbyte)dt.Day;
+			this.Hour  = (sbyte)dt.Hour;
+			this.Min   = (sbyte)dt.Minute;
+		}
+
 		public override string ToString()
 		{
 			return $"{this.Day,2:00}-{this.Month,2:00}-{this.Year,4} " +
 				   $"{this.Hour,2:00}:{this.Min,2:00}";
 		}
 	}
-	
-	/// <summary>
-	/// Класс базовая заметка. Содержит только заголовок и текст
-	/// </summary>
-	class BaseNote
-	{
-		public string Title { get; set; }           // Заголовок заметки
-													// Для события - название события
-													// Для дела    - само дело
-		public string Text { get; set; }            // Текст заметки
-													// Для события - необязательный комментарий
-													// Для дела    - необязательный комментарий
-		
-		/// <summary>
-		/// Создаёт базовую заметку с текущими системными датой и временем.
-		/// </summary>
-		/// <param name="title">Заголовок заметки</param>
-		/// <param name="text">Текст заметки</param>
-		public BaseNote(string title, string text)
-		{
-			this.Title		= title;
-			this.Text		= text;
-		}
 
-	}
-
-	public enum TypeOfNote : byte
+	public class Note : IComparable, IComparer<Note>   // Запись
 	{
-		Note  = 0,      // просто текстовая заметка
-		Event = 1,      // мероприятие привязанное ко времени (можно и на весь день)
-		ToDo  = 2       // дело, которое надо сделать
-	}
-	class Note			// Запись
-	{
-		public KeyStruct DisplayDT { get; set; }            // Содержит уникальный ID заметки
+		public uint noteID { get; private set; }            // Уникальный ID заметки
 															// Генерируется на самом высоком уровне
 															// OrganizerClass
-															// Отображаемые дата и время записи в ежедневнике
-		public SimpleDateTime CreationDT { get; set; }		// Дата и время создания записи в ежедневнике
-		public SimpleDateTime ChangeDT   { get; set; }		// Дата и время последнего изменения записи
-		public SimpleDateTime DeleteDT   { get; set; }		// Дата и время удаления записи
+		public SimpleDateTime DisplayDT { get; set; }      // Отображаемые дата и время записи в ежедневнике
 
-		public Stack<BaseNote> noteStack { get; set; }	// Текст заметки.
-														// Организован как стек, чтобы можно было откатываться
-														// назад
-		public TypeOfNote TypeOfNote { get; set; }		// тип заметки
-														// Event		- мероприятие в опр время
-														// Note			- просто заметка
-														// To Do Action	- дело
-
-		public bool WholeDay { get; set; }				// Event на весь день true - yes, false - no
-		public bool Done	 { get; set; }				// To Do сделано или нет true - yes, false - no
-		public bool Star	 { get; set; }				// To Do приоритетное? true - да, false - нет
-		
-		/// <summary>
-		/// Конструктор создаёт новую запись ЗАМЕТКА в заданных дате и времени
-		/// </summary>
-		/// <param name="displayDT">Дата и время отображения записи</param>
-		/// <param name="title">Заголовок записи</param>
-		/// <param name="text">Текст заметки</param>
-		public Note(KeyStruct keyDT, string title, string text)
+		public string DisplayDate
 		{
-			// Помним, что конструктор класса вызывается при первом создании экземпляра класса через new
-			// Поэтому переменным память не выделена. Переменные не инициализированы
-			CreateNote(keyDT, title, text);
-			this.TypeOfNote = TypeOfNote.Note;					  // тип записи 
+			get { return $"{DisplayDT.Year:0000}.{DisplayDT.Month:00}.{DisplayDT.Day:00}"; }
+			//set
+			//{
+			//	DateTime tmpDT;
+			//	if (DateTime.TryParseExact(value,
+			//							   "HH:mm",
+			//							   CultureInfo.InvariantCulture,
+			//							   DateTimeStyles.NoCurrentDateDefault,
+			//							   out tmpDT)
+			//		)
+			//	{
+			//		DisplayDT.Hour = (sbyte)tmpDT.Hour;
+			//		DisplayDT.Min = (sbyte)tmpDT.Minute;
+			//	}
+			//}
 		}
 
-		/// <summary>
-		/// Конструктор создаёт новую запись СОБЫТИЕ в заданных дате и времени
-		/// </summary>
-		/// <param name="displayDT">Дата и время отображения записи</param>
-		/// <param name="title">Заголовок записи</param>
-		/// <param name="text">Текст заметки</param>
-		/// <param name="wholeDay">true - whole day, false - в конкретное время</param>
-		public Note(KeyStruct keyDT, string title, string text, bool wholeDay)
+		public string DisplayTime
 		{
-			// Помним, что конструктор класса вызывается при первом создании экземпляра класса через new
-			// Поэтому переменным память не выделена. Переменные не инициализированы
-			CreateNote(keyDT, title, text);
-			this.TypeOfNote = TypeOfNote.Event;				// тип записи - событие
-			this.WholeDay   = wholeDay;
-
-			// генерируется время 
-			// Т.к. DisplayDT - это структура-свойство класса Note,
-			// т.е. доступ к ней через { get; set; }, 
-			// то полям этой структуры нельзя присвоить значения напрямую!
-			// Поэтому создаём вспомогательную переменную tempDT
-
-			KeyStruct tempDT = keyDT;  // отображаемые дата и время заметки 
-			if (wholeDay)									
-			{								// Если событие на весь день
-				tempDT.Hour = 9;			// То отображаем его с 9:00 утра
-				tempDT.Min  = 0;								
+			get { return $"{DisplayDT.Hour:00}:{DisplayDT.Min:00}"; }
+			set 
+			{ 
+				DateTime tmpDT;
+				if (DateTime.TryParseExact(value, 
+										   "HH:mm", 
+										   CultureInfo.InvariantCulture, 
+										   DateTimeStyles.NoCurrentDateDefault, 
+										   out tmpDT)
+					)
+				{
+					DisplayDT.Hour = (sbyte)tmpDT.Hour;
+					DisplayDT.Min  = (sbyte)tmpDT.Minute;
+				}
 			}
-			this.DisplayDT = tempDT;
+		}
+		public SimpleDateTime CreationDT { get; set; }      // Дата и время создания записи в ежедневнике
+		public string CreationDate
+		{
+			get { return $"{CreationDT.Year:0000}.{CreationDT.Month:00}.{CreationDT.Day:00}"; }
+			//set
+			//{
+			//	DateTime tmpDT;
+			//	if (DateTime.TryParseExact(value,
+			//							   "HH:mm",
+			//							   CultureInfo.InvariantCulture,
+			//							   DateTimeStyles.NoCurrentDateDefault,
+			//							   out tmpDT)
+			//		)
+			//	{
+			//		CreationDT.Hour = (sbyte)tmpDT.Hour;
+			//		CreationDT.Min = (sbyte)tmpDT.Minute;
+			//	}
+			//}
 		}
 
-		/// <summary>
-		/// Конструктор создаёт новую запись ДЕЛО для заданных даты и времени
-		/// </summary>
-		/// <param name="displayDT">Дата и время отображения записи</param>
-		/// <param name="title">Заголовок записи</param>
-		/// <param name="text">Текст заметки</param>
-		/// <param name="done">Флаг - сделано/не сделано</param>
-		/// <param name="star">Флаг - приоритетное/не приоритетное</param>
-		public Note(KeyStruct keyDT, string title, string text, bool done, bool star)
+		public string CreationTime
 		{
-			// Помним, что конструктор класса вызывается при первом создании экземпляра класса через new
-			// Поэтому переменным память не выделена. Переменные не инициализированы
-			CreateNote(keyDT, title, text);
-			this.TypeOfNote = TypeOfNote.ToDo;      // тип записи - дело
-			this.Done = done;                       // флаг - сделано/не сделано
-			this.Star = star;						// флаг - приоритетное/не приоритетное
+			get { return $"{CreationDT.Hour:00}:{CreationDT.Min:00}"; }
+			//set
+			//{
+			//	DateTime tmpDT;
+			//	if (DateTime.TryParseExact(value,
+			//							   "HH:mm",
+			//							   CultureInfo.InvariantCulture,
+			//							   DateTimeStyles.NoCurrentDateDefault,
+			//							   out tmpDT)
+			//		)
+			//	{
+			//		CreationDT.Hour = (sbyte)tmpDT.Hour;
+			//		CreationDT.Min = (sbyte)tmpDT.Minute;
+			//	}
+			//}
+		}
+		public SimpleDateTime ChangeDT { get; set; }        // Дата и время последнего изменения записи
+		public SimpleDateTime DeleteDT { get; set; }        // Дата и время удаления записи
+
+		public string DeleteDate
+		{
+			get { return $"{DeleteDT.Year:0000}.{DeleteDT.Month:00}.{DeleteDT.Day:00}"; }
+			//set
+			//{
+			//	DateTime tmpDT;
+			//	if (DateTime.TryParseExact(value,
+			//							   "HH:mm",
+			//							   CultureInfo.InvariantCulture,
+			//							   DateTimeStyles.NoCurrentDateDefault,
+			//							   out tmpDT)
+			//		)
+			//	{
+			//		DeleteDT.Hour = (sbyte)tmpDT.Hour;
+			//		DeleteDT.Min = (sbyte)tmpDT.Minute;
+			//	}
+			//}
 		}
 
-		/// <summary>
-		/// Создаёт стек заметок, помещает туда общие для всех записей эл-ты: ID, заголовок и текст,
-		/// дату отображения, дату создания. Устанавливает в минимальное значение даты изменения и удаления.
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="dt"></param>
-		/// <param name="title"></param>
-		/// <param name="text"></param>
-		private void CreateNote(KeyStruct keyDT, string title, string text)
+		public string DeleteTime
 		{
-			// Помним, что конструктор класса вызывается при первом создании экземпляра класса через new
-			// Поэтому переменным память не выделена. Переменные не инициализированы
-			this.noteStack   = new Stack<BaseNote>();        // создаём стек заметок
-			BaseNote newNote = new BaseNote(title, text);    // создаём заметку. 
-			this.noteStack.Push(newNote);                    // помещаем заметку в стек
-
-			// генерируется время 
-			this.DisplayDT  = keyDT;	  // передаём уникальный ID и отображаемые дату и время заметки 
-			this.CreationDT = new SimpleDateTime(DateTime.Now);       // Текущее значение даты и времени
-			this.ChangeDT   = new SimpleDateTime(DateTime.MinValue);  // Значение по умлочанию 01.01.0001 00:00:00
-			this.DeleteDT   = new SimpleDateTime(DateTime.MinValue);  // Значение по умлочанию 01.01.0001 00:00:00
+			get { return $"{DeleteDT.Hour:00}:{DeleteDT.Min:00}"; }
+			//set
+			//{
+			//	DateTime tmpDT;
+			//	if (DateTime.TryParseExact(value,
+			//							   "HH:mm",
+			//							   CultureInfo.InvariantCulture,
+			//							   DateTimeStyles.NoCurrentDateDefault,
+			//							   out tmpDT)
+			//		)
+			//	{
+			//		DeleteDT.Hour = (sbyte)tmpDT.Hour;
+			//		DeleteDT.Min = (sbyte)tmpDT.Minute;
+			//	}
+			//}
 		}
 
-		/// <summary>
-		/// Изменяет текущую заметку, т.е. помещает на верх стека новые заголовок и текст
-		/// </summary>
-		/// <param name="newTitle"></param>
-		/// <param name="newText"></param>
-		public void ChangeNote(string newTitle, string newText)
+		private string location;                            // Место
+		public string Location
 		{
-			BaseNote newNote = new BaseNote(newTitle, newText);
-			// заметка хранит до 10 последних изменений, включая текущее видимое значение
-			if (this.noteStack.Count == 10)
+			get { return this.location; }
+			set
 			{
-				// удаляем самый глубокий элемент
-				// К сожалению, нет метода, удаляющего самый первый элемент стека,
-				// хотя реализовать его проще простого - просто отсекаешь последний эл-т массива,
-				// через который реализован стек.
-				
-				BaseNote[] tempArr = noteStack.ToArray();		// Поэтому просто копируем стек в массив, 
-				noteStack.Clear();								// очищаем стек
-				for (int i = tempArr.Length - 2; i >= 0; i--)   // а потом запихиваем назад в стек
-					noteStack.Push(tempArr[i]);					// все эл-ты, кроме первого (посл. в массиве) 
+				this.location = value;                      // При изменении места
+				this.ChangeDT.Update(DateTime.Now);         // устанавливаем дату и время изменений
 			}
-
-			this.noteStack.Push(newNote);
-
-			SimpleDateTime newChangeDT = new SimpleDateTime(DateTime.Now);
-			this.ChangeDT = newChangeDT;
 		}
 
-		public void ChangeNoteTilte(string newTitle) 
+		private string title;                               // Заголовок заметки
+		public string Title
 		{
-			ChangeNote(newTitle, noteStack.Peek().Text);
+			get { return this.title; }
+			set
+			{
+				this.title = value;                         // При изменении заголовка
+				this.ChangeDT.Update(DateTime.Now);         // устанавливаем дату и время изменений
+			}
 		}
-		public void ChnageNoteText (string newText) 
+
+		private string text;                                // Текст заметки
+		public string Text
 		{
-			ChangeNote(noteStack.Peek().Title, newText);
+			get { return this.text; }
+			set
+			{
+				this.text = value;                          // При изменении текста
+				this.ChangeDT.Update(DateTime.Now);         // устанавливаем дату и время изменений
+			}
 		}
-		public void ChangeNoteType (TypeOfNote newType) 
+
+		/// <summary>
+		/// Конструктор создаёт новую запись в заданных дате и времени
+		/// </summary>
+		/// <param name="noteID">Уникальный номер записи</param>
+		/// <param name="noteDT">Дата и время отображения записи</param>
+		/// <param name="title">Заголовок записи</param>
+		/// <param name="text">Текст заметки</param>
+		public Note(uint noteID, SimpleDateTime noteDT, string location, string title, string text)
 		{
-			this.TypeOfNote = newType;
+			// Помним, что конструктор класса вызывается при первом создании экземпляра класса через new
+			// Поэтому переменным память не выделена. Переменные не инициализированы
+			this.noteID		= noteID;            // передаём уникальный ID
+			this.DisplayDT  = new SimpleDateTime(noteDT);             // Отображаемые дата и время заметки 
+			this.CreationDT = new SimpleDateTime(DateTime.Now);       // Текущее значение даты и времени
+			this.ChangeDT	= new SimpleDateTime(DateTime.MinValue);  // Значение по умлочанию 01.01.0001 00:00:00
+			this.DeleteDT	= new SimpleDateTime(DateTime.MinValue);  // Значение по умлочанию 01.01.0001 00:00:00
+			this.Location   = location;			// записываем место
+			this.Title		= title;            // записываем заголовок
+			this.Text		= text;             // и текст заметки
 		}
-		public void ChangeNoteFlag (bool wDayOrDone, bool star) 
+
+		public int CompareTo(object o)
 		{
-			this.WholeDay = wDayOrDone;
-			this.Done	  = wDayOrDone;
-			this.Star	  = star;
+			Note key = o as Note;
+			int result = DisplayDT.CompareTo(key.DisplayDT);
+			if (result != 0) return result;
+			result = noteID.CompareTo(key.noteID);
+			return result;
+		}
+
+		public int Compare(Note x, Note y)
+		{
+			return x.CompareTo(y);
 		}
 
 	}
 
 	class DayClass
 	{
-		public SortedList<KeyStruct, Note> Day { get; set; }
+		public List<Note> Day { get; set; }
 
 		public DayClass()
 		{
-			Day = new SortedList<KeyStruct, Note>();
+			Day = new List<Note>();
 		}
 
 		/// <summary>
@@ -311,19 +281,50 @@ namespace Homework_07_WPF_Organizer
 		/// </summary>
 		/// <param name="noteDT">Дата и время записи</param>
 		/// <param name="note">Запись</param>
-		public void AddNote(KeyStruct noteDT, Note note)
+		public void AddNote(uint noteID, SimpleDateTime noteDT, string location, string title, string text)
 		{
-			this.Day.Add(noteDT, note);
+			Note newNote = new Note(noteID, noteDT, location, title, text);
+			this.Day.Add(newNote);                  // Добавляем запись в список
+			this.Day.Sort(newNote.Compare);         // сортируем по времени и ИД
 		}
 
-		public void RemoveNote(KeyStruct noteDT)
-		{
-			this.Day.Remove(noteDT);
-		}
+		///// <summary>
+		///// Удаляет запись из списка записей дня.
+		///// (пока не реализовано) и помещает эту запись в корзину
+		///// </summary>
+		///// <param name="noteToRemove">Запись для удаления</param>
+		//public void RemoveNote(Note noteToRemove)			// Может быть сделать bool. True - removed
+		//{
+		//	this.Day.Remove(noteToRemove);
+		//}
+
+		/// <summary>
+		/// Удаляет запись с уникальным ID, датой и временем из списка записей дня.
+		/// (пока не реализовано) и помещает эту запись в корзину
+		/// </summary>
+		/// <param name="noteID"></param>
+		/// <param name="noteDT"></param>
+		/// <returns>Возвращает удалённую запись, в которой поле DeletedDT установлено 
+		/// в текущую дату. Возвращает null, если такой записи не найдено.</returns>
+		public Note RemoveNote(uint noteID, SimpleDateTime noteDT)
+        {
+			foreach (var e in this.Day)
+				if (e.noteID == noteID & e.DisplayDT == noteDT)
+				{
+					// Если я правильно понимаю, то е - это ссылка на объект. И при удалении из списка
+					// объект в памяти остаётся, просто из списка удаляется ссылка.
+					// но сама ссылка продолжает указывать на тот же объект
+					
+					this.Day.Remove(e);					// Удаляем объект из списка
+					e.DeleteDT.Update(DateTime.Now);	// Помещаем текущие дату и время в ДВ удаления
+					return e;							// Возвращаем эту запись
+				}
+			return null;				// Запись с таким ИД и временем не найдена
+        }
 	}
 
 	/// <summary>
-	/// Класс структуры года - 
+	/// Класс структуры года
 	/// </summary>
 	class YearClass
 	{
@@ -386,6 +387,9 @@ namespace Homework_07_WPF_Organizer
 		// Список лет в ежедневнике
 		public SortedList<short,YearClass> Organizer { get; set; }
 
+		// Корзина
+		public List<Note> RecycleBin { get; set; }
+
 		/// <summary>
 		/// Конструктор для класса ежедневник. Создаёт экземпляр для текущего года.
 		/// Инициализирует все счётчики.
@@ -396,6 +400,7 @@ namespace Homework_07_WPF_Organizer
 			Count	  = 0;                  // Обнуляем счётчик записей в ежедневнике
 
 			Organizer = new SortedList<short, YearClass>(); // Создаём пустой органайзер
+			RecycleBin = new List<Note>();					// Создаём пустую корзину
 		}
 
 		#region Note Operations: Add, Change, Remove
@@ -408,17 +413,12 @@ namespace Homework_07_WPF_Organizer
 		/// <param name="title">Заголовок записи</param>
 		/// <param name="text">Текст записи</param>
 		/// <param name="typeOfNote">Тип записи - заметка, событие или дело</param>
-		public void AddNote(SimpleDateTime displayDT, string title, string text, 
-							TypeOfNote typeOfNote, 
-							bool wDayOrDone,		// флаг весь день - событие, сделано - дело
-							bool star)				// флаг приоритета для дела
+		public bool AddNote(SimpleDateTime displayDT, string location, string title, string text)
 		{
 			short currYear = displayDT.Year;
 			sbyte currMon  = displayDT.Month;
 			sbyte currDay  = displayDT.Day;
 			DayClass dayToAdd;
-			KeyStruct keyDT;
-			Note newNote;
 
 			// Проверка, выделена ли память для этой даты
 			// Инициализирован ли год?
@@ -439,97 +439,156 @@ namespace Homework_07_WPF_Organizer
 				dayToAdd = Organizer[currYear][currMon][currDay];   // присваиваем ради сокращения записи
 
 				Count++;
-				keyDT = new KeyStruct(displayDT, ++IDcounter);
-				switch (typeOfNote)
-				{
-					case TypeOfNote.Note:
-						newNote = new Note(keyDT, title, text);
-						dayToAdd.AddNote(keyDT, newNote);
-						return;
-					case TypeOfNote.Event:
-						newNote = new Note(keyDT, title, text, wDayOrDone);
-						dayToAdd.AddNote(keyDT, newNote);
-						return;
-					case TypeOfNote.ToDo:
-						newNote = new Note(keyDT, title, text, wDayOrDone, star);
-						dayToAdd.AddNote(keyDT, newNote);
-						return;
-					default:
-						Console.WriteLine("Unknown type of a record!!!");
-						break;
-				}
+				IDcounter++;
+				dayToAdd.AddNote(IDcounter, displayDT, location, title, text);
+				return true;
 			}
 
-			// Если пришли сюда, значит в этом дне уже есть запись(и)
+			// Если пришли сюда, значит в дне есть список записей. Возможно он пуст.
 			dayToAdd = Organizer[currYear][currMon][currDay];
 
 			// Существует ли уже запись с такими же временем, типом, заголовком, текстом?
 			//
 			// Если существует и полностью всё совпадает - то значит, мы просто ничего не добавляем
 			// Если совпадает дата, но время отличается - добавляем
-			// Если совпадает дата и время, но тип отличается - добавляем
-			// Если совпадает дата и время, и тип, но заголовок и/или текст заметки оличается - добавляем
-			// Если совпадает дата и время, и тип, и заголовок с текстом, - не добавляем.
+			// Если совпадает дата и время, но заголовок и/или текст заметки оличается - добавляем
+			// Если совпадает дата и время, и заголовок с текстом, - не добавляем.
 
+			// Если в дне список записей пуст, то цикл просто не выполнится ни разу
 			foreach(var e in dayToAdd.Day)
-				if (e.Value.DisplayDT.Hour == displayDT.Hour)	// Запись с таким временем 
-				if (e.Value.DisplayDT.Min  == displayDT.Min)    // уже существует?
-				if (e.Value.TypeOfNote     == typeOfNote)		// Тип совпадает?
-				if (e.Value.noteStack.Peek().Title == title)	// Заголовок и текст записи
-				if (e.Value.noteStack.Peek().Text  == text)		// совпадает?
-					return;			// ничего не добавляем!!! Такая заметка уже есть!!!
+				if (e.DisplayDT.Hour == displayDT.Hour)	// Запись с таким временем 
+				if (e.DisplayDT.Min  == displayDT.Min)  // уже существует?
+				if (e.Location == location)				// Место совпадает
+				if (e.Title == title)					// Заголовок и текст записи
+				if (e.Text  == text)					// совпадает?
+					return false;			// ничего не добавляем!!! Такая заметка уже есть!!!
 	
 			// Специально сделал несколько  if-ов, а не составное выражение выр1 & выр2 & выр3 
 			// Потому что в логическом выражении вычисляются обе части выражения, 
 			// а сравнение текста - это оч. долго
 
 			Count++;
-			keyDT = new KeyStruct(displayDT, ++IDcounter);
-			switch (typeOfNote)
-			{
-				case TypeOfNote.Note:
-					newNote = new Note(keyDT, title, text);
-					dayToAdd.AddNote(keyDT, newNote);
-					return;
-				case TypeOfNote.Event:
-					newNote = new Note(keyDT, title, text, wDayOrDone);
-					dayToAdd.AddNote(keyDT, newNote);
-					return;
-				case TypeOfNote.ToDo:
-					newNote = new Note(keyDT, title, text, wDayOrDone, star);
-					dayToAdd.AddNote(keyDT, newNote);
-					return;
-			}
-
-		}
-
-
-		public void EditNoteContent(KeyStruct keyDT, string newTitle, string newText)
-		{
-			BaseNote noteToEdit =
-				Organizer[keyDT.Year][keyDT.Month][keyDT.Day].Day[keyDT].noteStack.Peek();
-			noteToEdit.Title = newTitle;
-			noteToEdit.Text  = newText;
-			Organizer[keyDT.Year][keyDT.Month][keyDT.Day].Day[keyDT].noteStack.Push(noteToEdit);
-
-			SimpleDateTime changeDT = new SimpleDateTime(DateTime.Now);
-			Organizer[keyDT.Year][keyDT.Month][keyDT.Day].Day[keyDT].ChangeDT = changeDT;
+			IDcounter++;
+			dayToAdd.AddNote(IDcounter, displayDT, location, title, text);
+			return true;
 		}
 
 		/// <summary>
-		/// Перемещает запись из указанной даты и с указанным ID в папку помойка
+		/// Перемещает запись из указанной даты и с указанным ID в корзину
 		/// </summary>
 		/// <param name="id">Уникальный идентификатор записи</param>
 		/// <param name="noteDT">Дата и время записи</param>
-		public void RemoveNote(KeyStruct noteKeyDT)
+		public void RemoveNote(uint noteID, SimpleDateTime noteDT)
 		{
 			Note noteToRemove =
-				Organizer[noteKeyDT.Year][noteKeyDT.Month][noteKeyDT.Day].Day[noteKeyDT];
-			Organizer[noteKeyDT.Year][noteKeyDT.Month][noteKeyDT.Day].Day.Remove(noteKeyDT);
-			Count--;
+				Organizer[noteDT.Year][noteDT.Month][noteDT.Day].RemoveNote(noteID, noteDT);
+			if (noteToRemove != null)
+			{
+				RecycleBin.Add(noteToRemove);
+				Count--;
+			}
 		}
 
-		#endregion Note Operations: Add, Change, Remove
+		/// <summary>
+		/// Перемещает запись из ежедневника в корзину
+		/// </summary>
+		/// <param name="noteToRemove">Запись для удаления</param>
+		public void RemoveNote(Note noteToRemove)
+		{
+			//if (noteToRemove == null) return;
+			short yyyy = noteToRemove.DisplayDT.Year;
+			sbyte mm   = noteToRemove.DisplayDT.Month;
+			sbyte dd   = noteToRemove.DisplayDT.Day;
+			Organizer[yyyy][mm][dd].Day.Remove(noteToRemove);
+			Count--;
+			noteToRemove.DeleteDT.Update(DateTime.Now);
+			RecycleBin.Add(noteToRemove);
+		}
+
+		/// <summary>
+		/// Возвращает указатель на список записей указанного дня
+		/// </summary>
+		/// <param name="dt">указанный день</param>
+		/// <returns>Указатель на список записей указнного дня, либо null - если день не был активирован
+		/// либо в дне нет записей</returns>
+		public List<Note> GetDayList(DateTime dt)
+		{
+			SimpleDateTime currDT = new SimpleDateTime(dt);
+			if (IsDateActivated(currDT))
+				return this.Organizer[currDT.Year][currDT.Month][currDT.Day].Day;
+			return null;
+		}
+
+		/// <summary>
+		/// Возвращает указатель на список записей указанного дня
+		/// </summary>
+		/// <param name="dt">указанный день</param>
+		/// <returns>Указатель на список записей указнного дня, либо null - если день не был активирован
+		/// либо в дне нет записей</returns>
+		public List<Note> GetDayList(SimpleDateTime dt)
+		{
+			if (IsDateActivated(dt))
+				return this.Organizer[dt.Year][dt.Month][dt.Day].Day;
+			return null;
+		}
+
+		/// <summary>
+		/// Проверяет, инициализирована ли память для дня
+		/// </summary>
+		/// <param name="dt">день для проверки</param>
+		/// <returns>True - да, день инициализирован, хотя список записей в дне может быть пуст.
+		/// False - день не инициализирован</returns>
+		private bool IsDateActivated(SimpleDateTime dt)
+		{
+			short currYear = dt.Year;
+			sbyte currMon  = dt.Month;
+			sbyte currDay  = dt.Day;
+
+			// Проверка, выделена ли память для этой даты
+			// Инициализирован ли год?
+			if (!Organizer.ContainsKey(currYear)) return false;
+
+			// Инициализирован ли месяц для этой даты?
+			if (Organizer[currYear][currMon] == null) return false;
+
+			// Инициализирован ли день?
+			if (Organizer[currYear][currMon][currDay] == null) return false;
+
+			return true;
+		}
+
+		/// <summary>
+		/// Перемещает выбранную запись из корзины обратно в ежедневник
+		/// </summary>
+		/// <param name="deletedNote">Выбранная запись</param>
+		public void RestoreNoteFromBin(Note deletedNote)
+		{
+			short yyyy = deletedNote.DisplayDT.Year;
+			sbyte mm = deletedNote.DisplayDT.Month;
+			sbyte dd = deletedNote.DisplayDT.Day;
+			Organizer[yyyy][mm][dd].Day.Add(deletedNote);
+			Organizer[yyyy][mm][dd].Day.Sort();
+			RecycleBin.Remove(deletedNote);
+			this.Count++;
+		}
+
+		/// <summary>
+		/// Навсегда удаляет запись из корзины
+		/// </summary>
+		/// <param name="deletedNote">Выбранная запись</param>
+		public void DeleteForeverFromBin(Note deletedNote)
+		{
+			RecycleBin.Remove(deletedNote);
+		}
+
+		/// <summary>
+		/// Очищает корзину от записей
+		/// </summary>
+		public void EmptyBin()
+		{
+			RecycleBin.Clear();
+		}
+		#endregion Note Operations: Add, Change, Remove, RestoreFromBin
 
 
 		#region File Operations
@@ -597,34 +656,6 @@ namespace Homework_07_WPF_Organizer
 		}
 
 		#endregion File Operations
-
 	}
-
-	/// <summary>
-	/// Класс помойки ... в помой
-	/// Класс папки ... 
-	/// </summary>
-	class Trash
-	{
-		public string Name { get; set; }		// название папки
-		
-		// 
-		//public List<Note> Content { get; set; } // содержание папки - заметки
-		public SortedList<DateTime, Note> Content { get; set; } // содержание папки - заметки
-	}
-
-	/// <summary>
-	/// Класс помойки ... в помой
-	/// Класс папки ... 
-	/// </summary>
-	class Filter
-	{
-		public string Name { get; set; }        // название папки
-
-		// 
-		//public List<Note> Content { get; set; } // содержание папки - заметки
-		public SortedList<DateTime, Object> Content { get; set; } // содержание папки - заметки
-	}
-
 
 }
