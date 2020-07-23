@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Homework_07_WPF_Organizer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="600" MinHeight="480" MinWidth="540">
+        Title="Ежедневник" Height="500" Width="600" MinHeight="480" MinWidth="540">
 	<Grid ShowGridLines="False" >
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="2*" 
@@ -29,7 +29,7 @@
 				 Grid.Column="0" Grid.Row="1" Grid.RowSpan="2"
 				 Margin="10"
 				 HorizontalContentAlignment="Stretch"
-				 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+				 ScrollViewer.HorizontalScrollBarVisibility="Disabled" DataContextChanged="dayToShowList_DataContextChanged"
 				 >
 			<ListBox.ItemTemplate>
 				<DataTemplate>
@@ -44,7 +44,7 @@
 								<RowDefinition/>
 							</Grid.RowDefinitions>
 							<TextBox x:Name="noteTime"
-									 Text="{Binding DisplayTime}"
+									 Text="{Binding stringTime}"
 									 Grid.Column="0" 
 									 Grid.Row="0"
 									 HorizontalAlignment="Left" 
@@ -130,7 +130,7 @@
 				</Button.Resources>
 			</Button>
 			<Button Name="SearchNote" 
-					Content="Поиск записи" 
+					Content="Поиск" 
 					Width="180"
 					Margin="5"
 					BorderThickness="0"

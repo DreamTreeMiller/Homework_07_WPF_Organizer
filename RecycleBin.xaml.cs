@@ -40,16 +40,6 @@ namespace Homework_07_WPF_Organizer
 		}
 
 		/// <summary>
-		/// Закрывает окно корзины
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void Click_ExitButton(object sender, RoutedEventArgs e)
-		{
-			this.Close();
-		}
-
-		/// <summary>
 		/// Навсегда удаляет из корзины выбранную запись 
 		/// </summary>
 		/// <param name="sender"></param>
@@ -69,6 +59,16 @@ namespace Homework_07_WPF_Organizer
 		{
 			workOrg.EmptyBin();
 			rbListView.Items.Refresh();
+		}
+
+		/// <summary>
+		/// Закрывает окно корзины
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Click_ExitButton(object sender, RoutedEventArgs e)
+		{
+			this.Close();
 		}
 	}
 }

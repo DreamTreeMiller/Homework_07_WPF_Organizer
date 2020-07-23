@@ -20,20 +20,17 @@ namespace Homework_07_WPF_Organizer
 	/// </summary>
 	public partial class NewNote : Window
 	{
-		public SimpleDateTime selectedDT = new SimpleDateTime(DateTime.Now);
-		
-		//public string noteLocation { get; set; }
-		//public string noteTitle { get; set; }
-		//public string noteText { get; set; }
-		public NewNote(SimpleDateTime currDate)
+		public NewNote(ref Note newNote)
 		{
 			InitializeComponent();
-			selectedDT.Year  = currDate.Year;
-			selectedDT.Month = currDate.Month;
-			selectedDT.Day   = currDate.Day;
-			DateTime dt = new DateTime(currDate.Year, currDate.Month, currDate.Day);
-			currentDate.Text = $"{dt.ToString("dddd, d MMMM yyyy г.")}";
-			  enterTime.Text = $"{selectedDT.Hour:00}:{selectedDT.Min:00}";
+			// Преобразовываем текущую дату (которая на экране) в строку
+			DateTime dt = new DateTime(newNote.Date.Year, newNote.Date.Month, newNote.Date.Day);
+			// И выводим в окно для ввода записи
+			currentDate.Text = $"{dt:dddd, d MMMM yyyy г.}";
+
+			this.DataContext = newNote;
+			// Выводим в поле для времени текущее время
+			//enterTime.Text = $"{newNote.Time.Hour:00}:{newNote.Time.Minute:00}";
 		}
 
 		private void btnOk_Click(object sender, RoutedEventArgs e)
